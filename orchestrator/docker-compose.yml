@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+
+    # docker run -it --rm --name service-hello-world-v2 -e PORT=8083 -e MYSQL_CONN_STRING=root@tcp(service-mariadb:3306)/hello_world?parseTime=true -p 8083:8083 --network my-network hello-world-v2
+    service-hello-world-v2:
+        build: ./hello-world-v2
+        environment: 
+          - PORT=8083
+          - MYSQL_CONN_STRING=root@tcp(service-mariadb:3306)/hello_world?parseTime=true
+        ports:
+          - 8083:8083
+        networks: 
+          - my-network
+        depends_on:
+          - service-mariadb
+
+    # docker run --name service-mariadb -it -p 3306:3306 -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -v C:/docker/docker-volume-example:/var/lib/mysql --network my-network mariadb
+    service-mariadb:
+        image: mariadb:latest
+        environment:
+          - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
+        ports:
+          - 3306
+        volumes:
+          - C:/docker/docker-volume-example-two:/var/lib/mysql
+          - ./mariadb/schema.sql:/data/application/init.sql
+        command: --init-file /data/application/init.sql
+        networks: 
+          - my-network
+networks:
+    my-network:

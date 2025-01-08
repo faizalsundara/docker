@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment1
+spec: 
+  selector:
+    matchLabels:
+      name: my-app1
+  template:
+    metadata:
+      labels:
+        name: my-app1
+    spec:
+      containers:
+        - name: hello-world
+          image: novalagung/hello-world:base
+          env:
+            - name: PORT
+              value: "8080"

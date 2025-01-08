@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment4
+spec:
+  selector:
+    matchLabels:
+      name: my-app4
+  template:
+    metadata:
+      labels:
+        name: my-app4
+    spec:
+      containers:
+        - name: hello-world-adamstudio
+          image: adamstudiodocker/udemy-praktis-belajar-docker-dan-kubernetes-untuk-pemula:hello-world
+          env:
+            - name: PORT
+              value: "8081"
+            - name: INSTANCE_ID
+              value: "my-app4"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service4
+spec:
+  type: NodePort
+  selector:
+    name: my-app4
+  ports:
+    - port: 8081
+      targetPort: 8081
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"  # Mengaktifkan dukungan regex
+spec:
+  rules:
+    - host: my-website.com
+      http:
+        paths:
+          - path: /v1(/|$)(.*)
+            pathType: ImplementationSpecific  # Mengizinkan penggunaan regex dengan anotasi
+            backend:
+              service:
+                name: my-service4
+                port:
+                  number: 8081
+          - path: /v2(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: my-service3
+                port:
+                  number: 8080

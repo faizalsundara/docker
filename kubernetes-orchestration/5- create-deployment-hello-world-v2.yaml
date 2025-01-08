@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment3
+spec:
+  selector:
+    matchLabels: 
+      name: my-app3
+  template:
+    metadata:
+      labels:
+        name: my-app3
+    spec:
+      containers:
+        - name: hello-world-v2
+          image: novalagung/hello-world:course-docker-kubernetes-fast-with-mariadb
+          env:
+            - name: PORT
+              value: "8080"
+            - name: MYSQL_CONN_STRING
+              value: root:Password.1@tcp(my-service2.default.svc.cluster.local:3306)/hello_world?parseTime=true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service3
+spec:
+  type: LoadBalancer
+  selector:
+    name: my-app3
+  ports:
+    - port: 8080
+      targetPort: 8080
